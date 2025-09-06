@@ -1,7 +1,31 @@
-import React from 'react';
-import { FileText, Sparkles, AlertCircle, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { FileText, Sparkles, AlertCircle, RefreshCw, Download, Share2, Copy, Check } from 'lucide-react';
+import { exportSummaries, shareContent, copyToClipboard } from '../utils/exportUtils';
 
 const SummaryTab = ({ data, loading, error, onGenerate }) => {
+  const [copySuccess, setCopySuccess] = useState('');
+  const [shareSuccess, setShareSuccess] = useState('');
+
+  const handleExport = () => {
+    exportSummaries(data);
+  };
+
+  const handleShare = async () => {
+    const shareText = `Check out these AI-generated summaries from PaperMind!\n\nShort Summary: ${data.short_summary.substring(0, 100)}...\n\nDetailed Summary: ${data.detailed_summary.substring(0, 100)}...`;
+    const success = await shareContent('PaperMind AI Summaries', shareText);
+    if (success) {
+      setShareSuccess('Shared successfully!');
+      setTimeout(() => setShareSuccess(''), 3000);
+    }
+  };
+
+  const handleCopy = async (text, type) => {
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopySuccess(type);
+      setTimeout(() => setCopySuccess(''), 2000);
+    }
+  };
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -64,12 +88,21 @@ const SummaryTab = ({ data, loading, error, onGenerate }) => {
     <div className="space-y-8">
       {/* Short Summary */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
-        <div className="flex items-center space-x-2 mb-4">
-          <Sparkles className="w-5 h-5 text-blue-600" />
-          <h3 className="text-xl font-semibold text-gray-900">Short Summary</h3>
-          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-            T5 Model
-          </span>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            <Sparkles className="w-5 h-5 text-blue-600" />
+            <h3 className="text-xl font-semibold text-gray-900">Short Summary</h3>
+            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+              T5 Model
+            </span>
+          </div>
+          <button
+            onClick={() => handleCopy(data.short_summary, 'short')}
+            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+            title="Copy short summary"
+          >
+            {copySuccess === 'short' ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+          </button>
         </div>
         <div className="prose prose-blue max-w-none">
           <p className="text-gray-700 leading-relaxed text-lg">
@@ -80,12 +113,21 @@ const SummaryTab = ({ data, loading, error, onGenerate }) => {
 
       {/* Detailed Summary */}
       <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
-        <div className="flex items-center space-x-2 mb-4">
-          <FileText className="w-5 h-5 text-green-600" />
-          <h3 className="text-xl font-semibold text-gray-900">Detailed Summary</h3>
-          <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-            BART Model
-          </span>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            <FileText className="w-5 h-5 text-green-600" />
+            <h3 className="text-xl font-semibold text-gray-900">Detailed Summary</h3>
+            <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+              BART Model
+            </span>
+          </div>
+          <button
+            onClick={() => handleCopy(data.detailed_summary, 'detailed')}
+            className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors"
+            title="Copy detailed summary"
+          >
+            {copySuccess === 'detailed' ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+          </button>
         </div>
         <div className="prose prose-green max-w-none">
           <p className="text-gray-700 leading-relaxed">
@@ -100,14 +142,28 @@ const SummaryTab = ({ data, loading, error, onGenerate }) => {
           Summaries generated for: <span className="font-medium">{data.filename}</span>
         </div>
         <div className="flex space-x-3">
+          {shareSuccess && (
+            <span className="text-green-600 text-sm">{shareSuccess}</span>
+          )}
           <button 
             onClick={onGenerate}
             className="btn-secondary text-sm"
           >
             Regenerate
           </button>
-          <button className="btn-primary text-sm">
-            Export Summaries
+          <button 
+            onClick={handleShare}
+            className="btn-secondary text-sm flex items-center space-x-2"
+          >
+            <Share2 className="w-4 h-4" />
+            <span>Share</span>
+          </button>
+          <button 
+            onClick={handleExport}
+            className="btn-primary text-sm flex items-center space-x-2"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export</span>
           </button>
         </div>
       </div>

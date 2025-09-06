@@ -1,10 +1,25 @@
 import React, { useState } from 'react';
-import { Target, ChevronLeft, ChevronRight, RotateCcw, AlertCircle, RefreshCw, Shuffle } from 'lucide-react';
+import { Target, ChevronLeft, ChevronRight, RotateCcw, Shuffle, AlertCircle, RefreshCw, Download, Share2 } from 'lucide-react';
+import { exportFlashcards, shareContent } from '../utils/exportUtils';
 
 const FlashcardsTab = ({ data, loading, error, onGenerate }) => {
   const [currentCard, setCurrentCard] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [shuffled, setShuffled] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState('');
+
+  const handleExport = () => {
+    exportFlashcards(data);
+  };
+
+  const handleShare = async () => {
+    const shareText = `Study Flashcards from PaperMind:\n\nQ: ${data.flashcards[currentCard]?.question}\nA: ${data.flashcards[currentCard]?.answer}`;
+    const success = await shareContent('PaperMind Study Flashcards', shareText);
+    if (success) {
+      setShareSuccess('Shared successfully!');
+      setTimeout(() => setShareSuccess(''), 3000);
+    }
+  };
+
   const [flashcards, setFlashcards] = useState([]);
 
   React.useEffect(() => {
@@ -12,16 +27,19 @@ const FlashcardsTab = ({ data, loading, error, onGenerate }) => {
       setFlashcards(data.flashcards);
       setCurrentCard(0);
       setShowAnswer(false);
-      setShuffled(false);
     }
   }, [data]);
 
   const shuffleCards = () => {
-    const shuffledCards = [...flashcards].sort(() => Math.random() - 0.5);
-    setFlashcards(shuffledCards);
+    const shuffled = [...flashcards].sort(() => Math.random() - 0.5);
+    setFlashcards(shuffled);
     setCurrentCard(0);
     setShowAnswer(false);
-    setShuffled(true);
+  };
+
+  const goToCard = (index) => {
+    setCurrentCard(index);
+    setShowAnswer(false);
   };
 
   const nextCard = () => {
@@ -46,8 +64,8 @@ const FlashcardsTab = ({ data, loading, error, onGenerate }) => {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-          <RefreshCw className="w-8 h-8 text-green-600 animate-spin" />
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
+          <RefreshCw className="w-8 h-8 text-purple-600 animate-spin" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Generating Flashcards...
@@ -85,8 +103,8 @@ const FlashcardsTab = ({ data, loading, error, onGenerate }) => {
   if (!data || !flashcards.length) {
     return (
       <div className="text-center py-12">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-          <Target className="w-8 h-8 text-green-600" />
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
+          <Target className="w-8 h-8 text-purple-600" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Generate Study Flashcards
@@ -111,7 +129,6 @@ const FlashcardsTab = ({ data, loading, error, onGenerate }) => {
           <h3 className="text-xl font-semibold text-gray-900">Study Flashcards</h3>
           <p className="text-gray-600 mt-1">
             {data.total_cards} flashcards • Card {currentCard + 1} of {flashcards.length}
-            {shuffled && <span className="text-green-600 ml-2">• Shuffled</span>}
           </p>
         </div>
         <div className="flex space-x-2">
@@ -133,43 +150,33 @@ const FlashcardsTab = ({ data, loading, error, onGenerate }) => {
       </div>
 
       {/* Flashcard */}
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 min-h-[400px] flex flex-col">
+      <div className="max-w-2xl mx-auto mb-8">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 min-h-[300px] flex flex-col">
           {/* Card Header */}
-          <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4 rounded-t-xl">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Target className="w-5 h-5" />
-                <span className="font-medium">Flashcard {currentCard + 1}</span>
-              </div>
-              <div className="text-sm opacity-90">
-                {currentFlashcard.type === 'short_answer' ? 'Short Answer' : 'Multiple Choice'}
-              </div>
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div className="flex items-center space-x-2">
+              <Target className="w-5 h-5 text-purple-600" />
+              <span className="text-sm font-medium text-gray-600">
+                Card {currentCard + 1} of {flashcards.length}
+              </span>
+            </div>
+            <div className="text-sm text-gray-500">
+              {showAnswer ? 'Answer' : 'Question'}
             </div>
           </div>
 
           {/* Card Content */}
-          <div className="flex-1 p-8 flex flex-col justify-center">
+          <div className="flex-1 flex items-center justify-center p-8">
             <div className="text-center">
-              <h4 className="text-xl font-semibold text-gray-900 mb-6 leading-relaxed">
-                {currentFlashcard.question}
-              </h4>
-              
-              {showAnswer ? (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6 animate-fade-in">
-                  <div className="text-green-700 font-medium mb-2">Answer:</div>
-                  <p className="text-gray-800 leading-relaxed">
-                    {currentFlashcard.answer}
-                  </p>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowAnswer(true)}
-                  className="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
-                >
-                  Show Answer
-                </button>
-              )}
+              <p className="text-lg text-gray-800 leading-relaxed mb-6">
+                {showAnswer ? currentFlashcard.answer : currentFlashcard.question}
+              </p>
+              <button
+                onClick={() => setShowAnswer(!showAnswer)}
+                className="btn-primary"
+              >
+                {showAnswer ? 'Show Question' : 'Show Answer'}
+              </button>
             </div>
           </div>
 
@@ -179,36 +186,29 @@ const FlashcardsTab = ({ data, loading, error, onGenerate }) => {
               <button
                 onClick={prevCard}
                 disabled={currentCard === 0}
-                className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronLeft className="w-4 h-4" />
-                <span>Previous</span>
+                <ChevronLeft className="w-5 h-5 text-gray-600" />
               </button>
-
+              
               <div className="flex space-x-2">
                 {flashcards.map((_, index) => (
                   <button
                     key={index}
-                    onClick={() => {
-                      setCurrentCard(index);
-                      setShowAnswer(false);
-                    }}
+                    onClick={() => goToCard(index)}
                     className={`w-3 h-3 rounded-full transition-colors ${
-                      index === currentCard
-                        ? 'bg-green-600'
-                        : 'bg-gray-300 hover:bg-gray-400'
+                      index === currentCard ? 'bg-purple-600' : 'bg-gray-300 hover:bg-gray-400'
                     }`}
                   />
                 ))}
               </div>
-
+              
               <button
                 onClick={nextCard}
                 disabled={currentCard === flashcards.length - 1}
-                className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                <span>Next</span>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-5 h-5 text-gray-600" />
               </button>
             </div>
           </div>
@@ -232,17 +232,36 @@ const FlashcardsTab = ({ data, loading, error, onGenerate }) => {
       {/* Actions */}
       <div className="flex items-center justify-between pt-6 border-t border-gray-200">
         <div className="text-sm text-gray-500">
-          Flashcards generated for: <span className="font-medium">{data.filename}</span>
+          {flashcards.length} flashcards generated for: <span className="font-medium">{data.filename}</span>
         </div>
         <div className="flex space-x-3">
-          <button 
-            onClick={onGenerate}
-            className="btn-secondary text-sm"
-          >
+          {shareSuccess && (
+            <span className="text-green-600 text-sm">{shareSuccess}</span>
+          )}
+          <button onClick={shuffleCards} className="btn-secondary text-sm flex items-center space-x-2">
+            <Shuffle className="w-4 h-4" />
+            <span>Shuffle</span>
+          </button>
+          <button onClick={resetCards} className="btn-secondary text-sm flex items-center space-x-2">
+            <RotateCcw className="w-4 h-4" />
+            <span>Reset</span>
+          </button>
+          <button onClick={onGenerate} className="btn-secondary text-sm">
             Regenerate
           </button>
-          <button className="btn-primary text-sm">
-            Export Flashcards
+          <button
+            onClick={handleShare}
+            className="btn-secondary text-sm flex items-center space-x-2"
+          >
+            <Share2 className="w-4 h-4" />
+            <span>Share</span>
+          </button>
+          <button
+            onClick={handleExport}
+            className="btn-primary text-sm flex items-center space-x-2"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export</span>
           </button>
         </div>
       </div>

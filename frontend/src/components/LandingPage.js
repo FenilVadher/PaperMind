@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, Brain, BookOpen, Target, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
+import { Upload, FileText, ScrollText, BookOpen, Target, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { apiService } from '../services/api';
 
 const LandingPage = ({ onFileUploaded }) => {
@@ -83,7 +83,7 @@ const LandingPage = ({ onFileUploaded }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Brain className="w-8 h-8 text-blue-600" />
+              <ScrollText className="w-8 h-8 text-blue-600" />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">PaperMind</h1>
                 <p className="text-sm text-gray-600">Understand research the smart way</p>
@@ -93,12 +93,12 @@ const LandingPage = ({ onFileUploaded }) => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Hero Section */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            AI-Powered Research
-            <span className="text-blue-600 block">Paper Explainer</span>
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
+            Your companion for understanding <span className="text-blue-600">paper</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Upload any research paper and get instant summaries, glossaries, and flashcards 

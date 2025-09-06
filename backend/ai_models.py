@@ -50,45 +50,41 @@ class AIModels:
             logger.error(f"Error loading models: {str(e)}")
             raise
     
-    def generate_short_summary(self, text: str, max_length: int = 150) -> str:
-        """
-        Generate a short summary using T5
-        
-        Args:
-            text: Input text to summarize
-            max_length: Maximum length of summary
-            
-        Returns:
-            Short summary string
-        """
+    def generate_short_summary(self, text, max_length=200):
+        """Generate a short summary using T5 with improved prompts"""
         try:
-            # Truncate text if too long
-            max_input_length = 512
-            if len(text.split()) > max_input_length:
-                text = ' '.join(text.split()[:max_input_length])
+            # Enhanced prompt for better academic paper summarization
+            input_text = f"summarize the key findings and main contributions of this research paper: {text}"
             
-            # Prepare input
-            input_text = f"summarize: {text}"
-            inputs = self.t5_tokenizer.encode(input_text, return_tensors="pt", max_length=512, truncation=True)
-            inputs = inputs.to(self.device)
+            # Tokenize with truncation
+            inputs = self.t5_tokenizer(
+                input_text, 
+                max_length=512, 
+                truncation=True, 
+                return_tensors="pt"
+            ).to(self.device)
             
-            # Generate summary
+            # Generate summary with improved parameters
             with torch.no_grad():
-                outputs = self.t5_model.generate(
-                    inputs,
+                summary_ids = self.t5_model.generate(
+                    inputs.input_ids,
                     max_length=max_length,
                     min_length=50,
-                    length_penalty=2.0,
-                    num_beams=4,
-                    early_stopping=True
+                    length_penalty=1.5,
+                    num_beams=6,
+                    early_stopping=True,
+                    do_sample=True,
+                    temperature=0.7,
+                    top_p=0.9,
+                    repetition_penalty=1.2
                 )
             
-            summary = self.t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            summary = self.t5_tokenizer.decode(summary_ids[0], skip_special_tokens=True)
             return summary.strip()
             
         except Exception as e:
             logger.error(f"Error generating short summary: {str(e)}")
-            return "Error generating summary. Please try again."
+            raise
     
     def generate_detailed_summary(self, text: str, max_length: int = 400) -> str:
         """

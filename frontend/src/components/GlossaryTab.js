@@ -1,30 +1,43 @@
 import React, { useState } from 'react';
-import { BookOpen, Search, AlertCircle, RefreshCw, Copy, Check } from 'lucide-react';
+import { BookOpen, Search, Copy, AlertCircle, RefreshCw, Download, Share2, Check } from 'lucide-react';
+import { exportGlossary, shareContent, copyToClipboard } from '../utils/exportUtils';
 
 const GlossaryTab = ({ data, loading, error, onGenerate }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [copiedTerm, setCopiedTerm] = useState(null);
+  const [copiedIndex, setCopiedIndex] = useState(null);
+  const [shareSuccess, setShareSuccess] = useState('');
+
+  const handleExport = () => {
+    exportGlossary(data);
+  };
+
+  const handleShare = async () => {
+    const shareText = `Technical Glossary from PaperMind:\n\n${data.glossary.slice(0, 3).map(item => `${item.term}: ${item.definition}`).join('\n\n')}`;
+    const success = await shareContent('PaperMind Technical Glossary', shareText);
+    if (success) {
+      setShareSuccess('Shared successfully!');
+      setTimeout(() => setShareSuccess(''), 3000);
+    }
+  };
 
   const filteredGlossary = data?.glossary?.filter(item =>
     item.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.definition.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  const copyToClipboard = async (text, term) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedTerm(term);
-      setTimeout(() => setCopiedTerm(null), 2000);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
+  const handleCopyTerm = async (text, index) => {
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 2000);
     }
   };
 
   if (loading) {
     return (
       <div className="text-center py-12">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
-          <RefreshCw className="w-8 h-8 text-purple-600 animate-spin" />
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+          <RefreshCw className="w-8 h-8 text-green-600 animate-spin" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Generating Glossary...
@@ -62,8 +75,8 @@ const GlossaryTab = ({ data, loading, error, onGenerate }) => {
   if (!data) {
     return (
       <div className="text-center py-12">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
-          <BookOpen className="w-8 h-8 text-purple-600" />
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+          <BookOpen className="w-8 h-8 text-green-600" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Generate Technical Glossary
@@ -88,45 +101,46 @@ const GlossaryTab = ({ data, loading, error, onGenerate }) => {
             {data.total_terms} terms found and explained
           </p>
         </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search terms..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64"
-          />
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search terms..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="input-field pl-10"
+            />
+          </div>
         </div>
       </div>
 
       {/* Glossary Grid */}
       {filteredGlossary.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1">
+        <div className="space-y-4">
           {filteredGlossary.map((item, index) => (
-            <div
-              key={index}
-              className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <h4 className="text-lg font-semibold text-purple-700 break-words">
-                  {item.term}
-                </h4>
+            <div key={index} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    {item.term}
+                  </h4>
+                  <p className="text-gray-700 leading-relaxed">
+                    {item.definition}
+                  </p>
+                </div>
                 <button
-                  onClick={() => copyToClipboard(`${item.term}: ${item.definition}`, item.term)}
-                  className="ml-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                  title="Copy definition"
+                  onClick={() => handleCopyTerm(`${item.term}: ${item.definition}`, index)}
+                  className="ml-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Copy to clipboard"
                 >
-                  {copiedTerm === item.term ? (
-                    <Check className="w-4 h-4 text-green-500" />
+                  {copiedIndex === index ? (
+                    <Check className="w-4 h-4 text-green-600" />
                   ) : (
                     <Copy className="w-4 h-4" />
                   )}
                 </button>
               </div>
-              <p className="text-gray-700 leading-relaxed">
-                {item.definition}
-              </p>
             </div>
           ))}
         </div>
@@ -142,17 +156,31 @@ const GlossaryTab = ({ data, loading, error, onGenerate }) => {
       {/* Actions */}
       <div className="flex items-center justify-between pt-6 border-t border-gray-200">
         <div className="text-sm text-gray-500">
-          Glossary generated for: <span className="font-medium">{data.filename}</span>
+          {filteredGlossary.length} terms found for: <span className="font-medium">{data.filename}</span>
         </div>
         <div className="flex space-x-3">
+          {shareSuccess && (
+            <span className="text-green-600 text-sm">{shareSuccess}</span>
+          )}
           <button 
             onClick={onGenerate}
             className="btn-secondary text-sm"
           >
             Regenerate
           </button>
-          <button className="btn-primary text-sm">
-            Export Glossary
+          <button 
+            onClick={handleShare}
+            className="btn-secondary text-sm flex items-center space-x-2"
+          >
+            <Share2 className="w-4 h-4" />
+            <span>Share</span>
+          </button>
+          <button 
+            onClick={handleExport}
+            className="btn-primary text-sm flex items-center space-x-2"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export</span>
           </button>
         </div>
       </div>
