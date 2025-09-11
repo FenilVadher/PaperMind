@@ -171,7 +171,6 @@ const Dashboard = ({ uploadedFile }) => {
                     }
                   `}
                 >
-                  <span className="text-lg">{tab.emoji}</span>
                   {tab.icon}
                   <span>{tab.label}</span>
                   {loading[tab.id] && (
@@ -215,8 +214,8 @@ const Dashboard = ({ uploadedFile }) => {
             )}
             {activeTab === 'comparison' && (
               <ComparisonTab
-                availableFiles={uploadedFile ? [uploadedFile.filename] : []}
-                uploadedFiles={uploadedFile ? [uploadedFile.filename] : []}
+                availableFiles={['2104.08860v2.pdf', '2306.15006v2.pdf', 'Attemtion_All_You_Need.pdf']}
+                uploadedFiles={['2104.08860v2.pdf', '2306.15006v2.pdf', 'Attemtion_All_You_Need.pdf']}
               />
             )}
           </div>
@@ -233,7 +232,7 @@ const Dashboard = ({ uploadedFile }) => {
             return (
               <div key={tab.id} className="card card-hover">
                 <div className="flex items-center space-x-3 mb-4">
-                  <span className="text-2xl">{tab.emoji}</span>
+                  <div className="text-gray-600">{tab.icon}</div>
                   <h3 className="text-lg font-semibold text-gray-900">{tab.label}</h3>
                 </div>
                 <p className="text-gray-600 mb-4 text-sm">

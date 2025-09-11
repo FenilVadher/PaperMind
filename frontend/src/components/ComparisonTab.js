@@ -25,7 +25,7 @@ const ComparisonTab = ({ availableFiles = [], uploadedFiles = [] }) => {
     setError('');
     
     try {
-      const response = await apiService.post('/compare/papers', {
+      const response = await apiService.post('/compare-papers', {
         filenames: selectedFiles
       });
       setComparisonData(response.data);
@@ -37,35 +37,50 @@ const ComparisonTab = ({ availableFiles = [], uploadedFiles = [] }) => {
   };
 
   const renderComparisonMatrix = () => {
-    if (!comparisonData?.comparison_results?.comparison_matrix) return null;
+    if (!comparisonData?.comparison_results) return null;
 
-    const papers = comparisonData.comparison_results.comparison_matrix;
+    const papers = comparisonData.comparison_results;
 
     return (
       <div className="space-y-6">
-        {/* Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Content Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {papers.map((paper, idx) => (
             <div key={idx} className="bg-white p-4 rounded-lg border border-gray-200">
-              <h4 className="font-semibold text-gray-900 mb-2 truncate">{paper.filename}</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Word Count:</span>
-                  <span className="font-medium">{paper.word_count?.toLocaleString()}</span>
+              <h4 className="font-semibold text-gray-900 mb-3 truncate">{paper.filename}</h4>
+              
+              <div className="space-y-3 text-sm">
+                <div>
+                  <span className="text-gray-600 font-medium">Research Focus:</span>
+                  <p className="text-gray-800 mt-1 text-xs leading-relaxed">{paper.research_focus}</p>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Summary Length:</span>
-                  <span className="font-medium">{paper.summary?.short_summary?.length || 0} chars</span>
+                
+                <div>
+                  <span className="text-gray-600 font-medium">Methodology:</span>
+                  <p className="text-gray-800 mt-1 text-xs">{paper.methodology_approach}</p>
                 </div>
+                
+                {paper.main_findings && paper.main_findings.length > 0 && (
+                  <div>
+                    <span className="text-gray-600 font-medium">Key Findings:</span>
+                    <div className="mt-1 space-y-1">
+                      {paper.main_findings.slice(0, 2).map((finding, fidx) => (
+                        <p key={fidx} className="text-xs text-gray-700 bg-gray-50 p-2 rounded">
+                          {finding.length > 100 ? finding.substring(0, 100) + '...' : finding}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Detailed Comparison */}
+        {/* Content Comparison Table */}
         <div className="bg-white rounded-lg border border-gray-200">
           <div className="p-4 border-b border-gray-200">
-            <h4 className="font-semibold">Detailed Comparison</h4>
+            <h4 className="font-semibold">Content Analysis Comparison</h4>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -81,32 +96,46 @@ const ComparisonTab = ({ availableFiles = [], uploadedFiles = [] }) => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 <tr>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">Word Count</td>
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">Research Focus</td>
                   {papers.map((paper, idx) => (
-                    <td key={idx} className="px-4 py-3 text-sm text-gray-600">
-                      {paper.word_count?.toLocaleString()}
+                    <td key={idx} className="px-4 py-3 text-sm text-gray-600 max-w-xs">
+                      <p className="text-xs leading-relaxed">{paper.research_focus}</p>
                     </td>
                   ))}
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">Research Methods</td>
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">Methodology</td>
                   {papers.map((paper, idx) => (
-                    <td key={idx} className="px-4 py-3 text-sm text-gray-600">
-                      <div className="flex flex-wrap gap-1">
-                        {paper.methodology?.methodology_analysis?.research_methods?.slice(0, 3).map((method, midx) => (
-                          <span key={midx} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
-                            {method}
-                          </span>
-                        )) || <span className="text-gray-400">Not analyzed</span>}
+                    <td key={idx} className="px-4 py-3 text-sm text-gray-600 max-w-xs">
+                      <p className="text-xs">{paper.methodology_approach}</p>
+                    </td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">Key Themes</td>
+                  {papers.map((paper, idx) => (
+                    <td key={idx} className="px-4 py-3 text-sm text-gray-600 max-w-xs">
+                      <div className="space-y-1">
+                        {paper.key_themes?.slice(0, 2).map((theme, tidx) => (
+                          <p key={tidx} className="text-xs bg-blue-50 p-1 rounded">
+                            {theme.length > 80 ? theme.substring(0, 80) + '...' : theme}
+                          </p>
+                        ))}
                       </div>
                     </td>
                   ))}
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">Summary</td>
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">Main Findings</td>
                   {papers.map((paper, idx) => (
                     <td key={idx} className="px-4 py-3 text-sm text-gray-600 max-w-xs">
-                      <p className="truncate">{paper.summary?.short_summary || 'No summary available'}</p>
+                      <div className="space-y-1">
+                        {paper.main_findings?.slice(0, 2).map((finding, fidx) => (
+                          <p key={fidx} className="text-xs bg-green-50 p-1 rounded">
+                            {finding.length > 80 ? finding.substring(0, 80) + '...' : finding}
+                          </p>
+                        )) || <span className="text-gray-400 text-xs">No specific findings extracted</span>}
+                      </div>
                     </td>
                   ))}
                 </tr>
@@ -115,13 +144,19 @@ const ComparisonTab = ({ availableFiles = [], uploadedFiles = [] }) => {
           </div>
         </div>
 
-        {/* Insights */}
+        {/* Content Insights */}
         <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-          <h4 className="font-semibold text-blue-900 mb-2">Comparison Insights</h4>
+          <h4 className="font-semibold text-blue-900 mb-2">Content Analysis Insights</h4>
           <div className="space-y-2 text-sm text-blue-800">
-            <p>• Papers compared: {papers.length}</p>
-            <p>• Average word count: {Math.round(papers.reduce((sum, p) => sum + (p.word_count || 0), 0) / papers.length).toLocaleString()}</p>
-            <p>• Most comprehensive: {papers.reduce((max, p) => (p.word_count || 0) > (max.word_count || 0) ? p : max).filename}</p>
+            {comparisonData.content_insights?.map((insight, idx) => (
+              <p key={idx}>• {insight}</p>
+            )) || (
+              <>
+                <p>• Papers compared: {papers.length}</p>
+                <p>• Content analysis focuses on research themes, methodologies, and findings</p>
+                <p>• Each paper contributes unique perspectives to the research domain</p>
+              </>
+            )}
           </div>
         </div>
       </div>

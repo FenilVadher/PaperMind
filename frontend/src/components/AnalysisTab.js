@@ -63,11 +63,11 @@ const AnalysisTab = ({ filename }) => {
     
     setLoading(true);
     try {
-      const response = await apiService.post('/search/semantic', {
+      const response = await apiService.post('/analyze/semantic-search', {
         filename,
         query: searchQuery
       });
-      setSearchResults(response.data.search_results);
+      setSearchResults(response.data);
     } catch (err) {
       setError(`Search failed: ${err.message}`);
     } finally {
@@ -80,25 +80,25 @@ const AnalysisTab = ({ filename }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
           <h4 className="font-semibold text-blue-900">Total Citations</h4>
-          <p className="text-2xl font-bold text-blue-600">{data.citation_analysis?.total_citations || 0}</p>
+          <p className="text-2xl font-bold text-blue-600">{data.total_citations || 0}</p>
         </div>
         <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-          <h4 className="font-semibold text-green-900">Unique Authors</h4>
-          <p className="text-2xl font-bold text-green-600">{data.citation_analysis?.most_cited_authors?.length || 0}</p>
+          <h4 className="font-semibold text-green-900">References Found</h4>
+          <p className="text-2xl font-bold text-green-600">{data.references?.length || 0}</p>
         </div>
         <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-          <h4 className="font-semibold text-purple-900">Citation Network</h4>
-          <p className="text-2xl font-bold text-purple-600">{data.citation_analysis?.citation_network?.nodes || 0}</p>
+          <h4 className="font-semibold text-purple-900">Analysis</h4>
+          <p className="text-sm text-purple-600">{data.citation_analysis || 'Complete'}</p>
         </div>
       </div>
       
-      {data.citation_analysis?.most_cited_authors && (
+      {data.references && data.references.length > 0 && (
         <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <h4 className="font-semibold mb-3">Most Cited Authors</h4>
+          <h4 className="font-semibold mb-3">Found References</h4>
           <div className="flex flex-wrap gap-2">
-            {data.citation_analysis.most_cited_authors.map((author, idx) => (
+            {data.references.slice(0, 10).map((ref, idx) => (
               <span key={idx} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                {author}
+                {ref}
               </span>
             ))}
           </div>
@@ -109,22 +109,22 @@ const AnalysisTab = ({ filename }) => {
 
   const renderMethodologyAnalysis = (data) => (
     <div className="space-y-4">
-      {data.methodology_analysis?.methodology_analysis && (
+      {data.methodology_analysis && (
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <h4 className="font-semibold mb-3">Methodology Analysis</h4>
           <div className="prose max-w-none">
-            <pre className="whitespace-pre-wrap text-sm text-gray-700">
-              {data.methodology_analysis.methodology_analysis}
-            </pre>
+            <p className="text-sm text-gray-700">
+              {data.methodology_analysis}
+            </p>
           </div>
         </div>
       )}
       
-      {data.methodology_analysis?.research_methods && (
+      {data.research_methods && (
         <div className="bg-green-50 p-4 rounded-lg border border-green-200">
           <h4 className="font-semibold mb-3">Research Methods Identified</h4>
           <div className="flex flex-wrap gap-2">
-            {data.methodology_analysis.research_methods.map((method, idx) => (
+            {data.research_methods.map((method, idx) => (
               <span key={idx} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
                 {method}
               </span>
@@ -137,27 +137,27 @@ const AnalysisTab = ({ filename }) => {
 
   const renderResearchGaps = (data) => (
     <div className="space-y-4">
-      {data.research_gaps?.research_gaps && (
+      {data.research_gaps && (
         <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
           <h4 className="font-semibold mb-3">Identified Research Gaps</h4>
-          <div className="prose max-w-none">
-            <pre className="whitespace-pre-wrap text-sm text-gray-700">
-              {data.research_gaps.research_gaps}
-            </pre>
+          <div className="space-y-2">
+            {Array.isArray(data.research_gaps) ? (
+              data.research_gaps.map((gap, idx) => (
+                <div key={idx} className="text-sm text-gray-700 p-2 bg-white rounded border">
+                  {gap}
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-gray-700">{data.research_gaps}</p>
+            )}
           </div>
         </div>
       )}
       
-      {data.research_gaps?.gap_categories && (
+      {data.gap_analysis && (
         <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <h4 className="font-semibold mb-3">Gap Categories</h4>
-          <div className="flex flex-wrap gap-2">
-            {data.research_gaps.gap_categories.map((category, idx) => (
-              <span key={idx} className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
-                {category}
-              </span>
-            ))}
-          </div>
+          <h4 className="font-semibold mb-3">Gap Analysis Summary</h4>
+          <p className="text-sm text-gray-700">{data.gap_analysis}</p>
         </div>
       )}
     </div>
@@ -165,21 +165,19 @@ const AnalysisTab = ({ filename }) => {
 
   const renderRelatedPapers = (data) => (
     <div className="space-y-4">
-      {data.related_papers?.related_papers?.arxiv && (
+      {data.related_papers && (
         <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <h4 className="font-semibold mb-3">Related Papers from arXiv</h4>
+          <h4 className="font-semibold mb-3">Related Papers</h4>
           <div className="space-y-3">
-            {data.related_papers.related_papers.arxiv.map((paper, idx) => (
+            {data.related_papers.map((paper, idx) => (
               <div key={idx} className="border-l-4 border-purple-400 pl-4">
                 <h5 className="font-medium text-gray-900">{paper.title}</h5>
                 <p className="text-sm text-gray-600">{paper.authors?.join(', ')}</p>
-                <p className="text-sm text-gray-500 mt-1">{paper.summary}</p>
-                {paper.url && (
-                  <a href={paper.url} target="_blank" rel="noopener noreferrer" 
-                     className="text-purple-600 hover:text-purple-800 text-sm">
-                    View Paper →
-                  </a>
-                )}
+                <p className="text-sm text-gray-500 mt-1">{paper.abstract}</p>
+                <div className="flex items-center space-x-4 mt-2">
+                  <span className="text-xs text-gray-500">Year: {paper.year}</span>
+                  <span className="text-xs text-purple-600">Similarity: {(paper.similarity_score * 100).toFixed(1)}%</span>
+                </div>
               </div>
             ))}
           </div>
@@ -190,27 +188,27 @@ const AnalysisTab = ({ filename }) => {
 
   const renderConceptMap = (data) => (
     <div className="space-y-4">
-      {data.concept_map && (
+      {data.concepts && (
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <h4 className="font-semibold mb-3">Concept Network</h4>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-indigo-600">{data.concept_map.stats?.total_concepts || 0}</p>
+              <p className="text-2xl font-bold text-indigo-600">{data.total_concepts || 0}</p>
               <p className="text-sm text-gray-600">Concepts</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-indigo-600">{data.concept_map.stats?.total_connections || 0}</p>
-              <p className="text-sm text-gray-600">Connections</p>
+              <p className="text-2xl font-bold text-indigo-600">{data.concepts?.length || 0}</p>
+              <p className="text-sm text-gray-600">Identified Terms</p>
             </div>
           </div>
           
-          {data.concept_map.nodes && (
+          {data.concepts && (
             <div className="bg-indigo-50 p-3 rounded">
               <h5 className="font-medium mb-2">Key Concepts</h5>
               <div className="flex flex-wrap gap-2">
-                {data.concept_map.nodes.slice(0, 10).map((node, idx) => (
+                {data.concepts.slice(0, 15).map((concept, idx) => (
                   <span key={idx} className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-sm">
-                    {node.label}
+                    {concept.name} ({concept.frequency})
                   </span>
                 ))}
               </div>
@@ -228,9 +226,9 @@ const AnalysisTab = ({ filename }) => {
         <div key={idx} className="bg-gray-50 p-4 rounded-lg border">
           <div className="flex justify-between items-start mb-2">
             <span className="text-sm font-medium text-gray-600">
-              Similarity: {(result.similarity * 100).toFixed(1)}%
+              Score: {(result.score * 100).toFixed(1)}%
             </span>
-            <span className="text-xs text-gray-500">Chunk {result.chunk_index}</span>
+            <span className="text-xs text-gray-500">Position {result.position}</span>
           </div>
           <p className="text-sm text-gray-800">{result.text}</p>
         </div>
