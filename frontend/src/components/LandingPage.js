@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, ScrollText, BookOpen, Target, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
+import { Upload, FileText, ScrollText, BookOpen, Target, Search, BarChart3, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { apiService } from '../services/api';
 
 const LandingPage = ({ onFileUploaded }) => {
@@ -73,6 +73,16 @@ const LandingPage = ({ onFileUploaded }) => {
       icon: <Target className="w-8 h-8 text-purple-600" />,
       title: "Study Flashcards",
       description: "Generate Q&A flashcards to test your understanding of the paper"
+    },
+    {
+      icon: <Search className="w-8 h-8 text-orange-600" />,
+      title: "Advanced Analysis",
+      description: "Deep analysis including citations, methodology, research gaps, and concept mapping"
+    },
+    {
+      icon: <BarChart3 className="w-8 h-8 text-indigo-600" />,
+      title: "Paper Comparison",
+      description: "Compare multiple papers side-by-side analyzing content, themes, and findings"
     }
   ];
 
@@ -101,8 +111,8 @@ const LandingPage = ({ onFileUploaded }) => {
             Your companion for understanding <span className="text-blue-600">paper</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Upload any research paper and get instant summaries, glossaries, and flashcards 
-            powered by state-of-the-art AI models. Make complex research accessible.
+            Upload any research paper and get instant summaries, glossaries, flashcards, advanced analysis, 
+            and paper comparisons powered by state-of-the-art AI models. Make complex research accessible.
           </p>
         </div>
 
@@ -204,7 +214,7 @@ const LandingPage = ({ onFileUploaded }) => {
           <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
             What PaperMind Can Do
           </h3>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
             {features.map((feature, index) => (
               <div key={index} className="card card-hover text-center">
                 <div className="flex justify-center mb-4">
