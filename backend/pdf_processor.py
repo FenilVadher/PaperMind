@@ -161,3 +161,143 @@ class PDFProcessor:
         except Exception as e:
             logger.error(f"Error getting page count: {str(e)}")
             return 0
+    
+    def generate_summary(self, text: str) -> dict:
+        """
+        Generate summary from text using simple extraction methods
+        
+        Args:
+            text: Input text to summarize
+            
+        Returns:
+            Dictionary containing short and detailed summaries
+        """
+        try:
+            # Split text into sentences
+            sentences = re.split(r'[.!?]+', text)
+            sentences = [s.strip() for s in sentences if len(s.strip()) > 20]
+            
+            # Extract first few sentences as short summary
+            short_summary = '. '.join(sentences[:3]) + '.' if len(sentences) >= 3 else text[:300]
+            
+            # Extract more sentences for detailed summary
+            detailed_summary = '. '.join(sentences[:8]) + '.' if len(sentences) >= 8 else text[:800]
+            
+            return {
+                'short_summary': short_summary,
+                'detailed_summary': detailed_summary,
+                'total_sentences': len(sentences)
+            }
+            
+        except Exception as e:
+            logger.error(f"Error generating summary: {str(e)}")
+            return {
+                'short_summary': 'Unable to generate summary',
+                'detailed_summary': 'Unable to generate detailed summary',
+                'total_sentences': 0
+            }
+    
+    def generate_glossary(self, text: str) -> dict:
+        """
+        Generate glossary from text using keyword extraction
+        
+        Args:
+            text: Input text to extract terms from
+            
+        Returns:
+            Dictionary containing glossary terms
+        """
+        try:
+            # Extract potential technical terms (capitalized words, acronyms)
+            terms = re.findall(r'\b[A-Z][A-Za-z]{2,}\b|\b[A-Z]{2,}\b', text)
+            
+            # Count frequency and filter
+            term_counts = {}
+            for term in terms:
+                if len(term) > 2 and term not in ['The', 'This', 'That', 'And', 'But', 'For']:
+                    term_counts[term] = term_counts.get(term, 0) + 1
+            
+            # Get top terms and create glossary
+            top_terms = sorted(term_counts.items(), key=lambda x: x[1], reverse=True)[:20]
+            
+            glossary = []
+            for term, count in top_terms:
+                # Find context sentence for definition
+                pattern = rf'\b{re.escape(term)}\b[^.]*\.'
+                match = re.search(pattern, text, re.IGNORECASE)
+                definition = match.group(0) if match else f"Technical term appearing {count} times in the document"
+                
+                glossary.append({
+                    'term': term,
+                    'definition': definition[:200] + '...' if len(definition) > 200 else definition,
+                    'frequency': count
+                })
+            
+            return {
+                'glossary': glossary,
+                'total_terms': len(glossary)
+            }
+            
+        except Exception as e:
+            logger.error(f"Error generating glossary: {str(e)}")
+            return {
+                'glossary': [],
+                'total_terms': 0
+            }
+    
+    def generate_flashcards(self, text: str) -> dict:
+        """
+        Generate flashcards from text using question-answer extraction
+        
+        Args:
+            text: Input text to create flashcards from
+            
+        Returns:
+            Dictionary containing flashcards
+        """
+        try:
+            # Extract sentences that could be questions/answers
+            sentences = re.split(r'[.!?]+', text)
+            sentences = [s.strip() for s in sentences if len(s.strip()) > 30]
+            
+            flashcards = []
+            
+            # Create flashcards from key sentences
+            for i, sentence in enumerate(sentences[:15]):  # Limit to 15 cards
+                if any(keyword in sentence.lower() for keyword in ['define', 'method', 'approach', 'result', 'conclusion']):
+                    # Create question from sentence
+                    question = f"What is mentioned about: {sentence[:50]}...?"
+                    answer = sentence
+                    
+                    flashcards.append({
+                        'id': i + 1,
+                        'question': question,
+                        'answer': answer
+                    })
+            
+            # If no keyword-based cards, create from first sentences
+            if len(flashcards) < 5:
+                for i, sentence in enumerate(sentences[:10]):
+                    words = sentence.split()
+                    if len(words) > 5:
+                        # Create fill-in-the-blank style question
+                        key_word = words[len(words)//2]  # Take middle word
+                        question_text = sentence.replace(key_word, '____', 1)
+                        
+                        flashcards.append({
+                            'id': len(flashcards) + 1,
+                            'question': f"Fill in the blank: {question_text}",
+                            'answer': key_word
+                        })
+            
+            return {
+                'flashcards': flashcards[:10],  # Limit to 10 cards
+                'total_cards': len(flashcards[:10])
+            }
+            
+        except Exception as e:
+            logger.error(f"Error generating flashcards: {str(e)}")
+            return {
+                'flashcards': [],
+                'total_cards': 0
+            }

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Brain, FileText, BookOpen, Target, ArrowLeft, Download, Share2, RefreshCw } from 'lucide-react';
+import { ScrollText, FileText, BookOpen, Target, Search, BarChart3, ArrowLeft, Download, Share2, RefreshCw } from 'lucide-react';
 import { apiService } from '../services/api';
 import SummaryTab from './SummaryTab';
 import GlossaryTab from './GlossaryTab';
 import FlashcardsTab from './FlashcardsTab';
+import AnalysisTab from './AnalysisTab';
+import ComparisonTab from './ComparisonTab';
 
 const Dashboard = ({ uploadedFile }) => {
   const navigate = useNavigate();
@@ -70,6 +72,18 @@ const Dashboard = ({ uploadedFile }) => {
       label: 'Flashcards',
       icon: <Target className="w-5 h-5" />,
       emoji: '🎯'
+    },
+    {
+      id: 'analysis',
+      label: 'Analysis',
+      icon: <Search className="w-5 h-5" />,
+      emoji: '🔍'
+    },
+    {
+      id: 'comparison',
+      label: 'Compare',
+      icon: <BarChart3 className="w-5 h-5" />,
+      emoji: '📊'
     }
   ];
 
@@ -92,7 +106,7 @@ const Dashboard = ({ uploadedFile }) => {
                 <span>Back</span>
               </button>
               <div className="flex items-center space-x-3">
-                <Brain className="w-8 h-8 text-blue-600" />
+                <ScrollText className="w-8 h-8 text-blue-600" />
                 <div>
                   <h1 className="text-xl font-bold text-gray-900">PaperMind</h1>
                   <p className="text-sm text-gray-600">Dashboard</p>
@@ -194,6 +208,17 @@ const Dashboard = ({ uploadedFile }) => {
                 onGenerate={() => handleGenerateContent('flashcards')}
               />
             )}
+            {activeTab === 'analysis' && (
+              <AnalysisTab
+                filename={uploadedFile?.filename}
+              />
+            )}
+            {activeTab === 'comparison' && (
+              <ComparisonTab
+                availableFiles={uploadedFile ? [uploadedFile.filename] : []}
+                uploadedFiles={uploadedFile ? [uploadedFile.filename] : []}
+              />
+            )}
           </div>
         </div>
 
@@ -215,6 +240,8 @@ const Dashboard = ({ uploadedFile }) => {
                   {tab.id === 'summary' && 'Generate AI-powered summaries of your research paper'}
                   {tab.id === 'glossary' && 'Get simple explanations of technical terms'}
                   {tab.id === 'flashcards' && 'Create study flashcards for better understanding'}
+                  {tab.id === 'analysis' && 'Advanced analysis: citations, methodology, research gaps'}
+                  {tab.id === 'comparison' && 'Compare multiple papers side-by-side'}
                 </p>
                 <div className="flex items-center justify-between">
                   <button

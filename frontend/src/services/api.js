@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -108,6 +108,86 @@ export const apiService = {
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to list files');
+    }
+  },
+
+  // Advanced Analysis Features
+  post: async (endpoint, data) => {
+    try {
+      const response = await api.post(endpoint, data);
+      return response;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || `Failed to ${endpoint}`);
+    }
+  },
+
+  // Citation Analysis
+  analyzeCitations: async (filename) => {
+    try {
+      const response = await api.post('/analyze/citations', { filename });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to analyze citations');
+    }
+  },
+
+  // Methodology Analysis
+  analyzeMethodology: async (filename) => {
+    try {
+      const response = await api.post('/analyze/methodology', { filename });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to analyze methodology');
+    }
+  },
+
+  // Semantic Search
+  semanticSearch: async (filename, query) => {
+    try {
+      const response = await api.post('/search/semantic', { filename, query });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to perform semantic search');
+    }
+  },
+
+  // Related Papers
+  findRelatedPapers: async (filename, title) => {
+    try {
+      const response = await api.post('/analyze/related-papers', { filename, title });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to find related papers');
+    }
+  },
+
+  // Research Gaps
+  identifyResearchGaps: async (filename) => {
+    try {
+      const response = await api.post('/analyze/research-gaps', { filename });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to identify research gaps');
+    }
+  },
+
+  // Concept Map
+  createConceptMap: async (filename) => {
+    try {
+      const response = await api.post('/analyze/concept-map', { filename });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to create concept map');
+    }
+  },
+
+  // Paper Comparison
+  comparePapers: async (filenames) => {
+    try {
+      const response = await api.post('/compare/papers', { filenames });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to compare papers');
     }
   },
 };
