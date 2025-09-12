@@ -324,9 +324,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - **React Community**: For excellent frontend development tools
 - **TailwindCSS**: For beautiful, responsive design system
 
-## 📞 Support
+## 👥 Team
 
-For support, email support@papermind.ai or create an issue in the repository.
+This project was built by:
+- **Fenil Vadher**
+- **Ritesh Sanchala** 
+- **Aryan Langhonja**
 
 ---
 
