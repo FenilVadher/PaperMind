@@ -219,5 +219,9 @@ __marimo__/
 
 .idea/
 
-#node modules
+# Node modules
 node_modules/
+
+# Uploads
+
+uploads/
