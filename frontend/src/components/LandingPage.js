@@ -260,6 +260,7 @@ const LandingPage = ({ onFileUploaded }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-gray-600">
             <p>&copy; 2024 PaperMind. Powered by advanced AI models including T5, BART, and Flan-T5.</p>
+            <p className="mt-2">Developed by Fenil Vadher, Ritesh Sanchala, Aryan Langhnoja</p>
           </div>
         </div>
       </footer>
