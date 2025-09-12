@@ -233,24 +233,73 @@ const LandingPage = ({ onFileUploaded }) => {
 
         {/* How it Works */}
         <div className="text-center">
-          <h3 className="text-3xl font-bold text-gray-900 mb-8">
-            How It Works
-          </h3>
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              { step: "1", title: "Upload PDF", desc: "Upload your research paper" },
-              { step: "2", title: "AI Processing", desc: "Our AI models analyze the content" },
-              { step: "3", title: "Generate Insights", desc: "Get summaries, glossary & flashcards" },
-              { step: "4", title: "Study & Learn", desc: "Use the generated content to understand better" }
-            ].map((item, index) => (
-              <div key={index} className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-4">
-                  {item.step}
+          <h3 className="text-3xl font-bold text-gray-900 mb-3">How It Works</h3>
+          <p className="text-gray-600 mb-10 max-w-2xl mx-auto">
+            Follow four simple steps to transform any paper into clear, actionable insights.
+          </p>
+
+          {/* Stepper */}
+          <div className="relative">
+            {/* connecting line for md+ */}
+            <div className="hidden md:block absolute top-10 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-indigo-200 to-purple-200"></div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {/* Step 1 */}
+              <div className="card card-hover text-left md:text-center relative">
+                <div className="flex md:block items-center md:items-stretch">
+                  <div className="shrink-0 md:mx-auto md:mb-4 w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-200">
+                    <Upload className="w-6 h-6" />
+                  </div>
+                  <div className="ml-4 md:ml-0">
+                    <div className="text-xs font-medium text-blue-600 tracking-wide">STEP 1</div>
+                    <h4 className="text-lg font-semibold text-gray-900">Upload PDF</h4>
+                    <p className="text-gray-600 text-sm mt-1">Drag & drop or browse your research paper.</p>
+                  </div>
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">{item.title}</h4>
-                <p className="text-gray-600 text-sm">{item.desc}</p>
               </div>
-            ))}
+
+              {/* Step 2 */}
+              <div className="card card-hover text-left md:text-center relative">
+                <div className="flex md:block items-center md:items-stretch">
+                  <div className="shrink-0 md:mx-auto md:mb-4 w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-200">
+                    <Search className="w-6 h-6" />
+                  </div>
+                  <div className="ml-4 md:ml-0">
+                    <div className="text-xs font-medium text-indigo-600 tracking-wide">STEP 2</div>
+                    <h4 className="text-lg font-semibold text-gray-900">AI Processing</h4>
+                    <p className="text-gray-600 text-sm mt-1">Content is extracted and analyzed with multiple models.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="card card-hover text-left md:text-center relative">
+                <div className="flex md:block items-center md:items-stretch">
+                  <div className="shrink-0 md:mx-auto md:mb-4 w-12 h-12 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-lg shadow-purple-200">
+                    <BarChart3 className="w-6 h-6" />
+                  </div>
+                  <div className="ml-4 md:ml-0">
+                    <div className="text-xs font-medium text-purple-600 tracking-wide">STEP 3</div>
+                    <h4 className="text-lg font-semibold text-gray-900">Generate Insights</h4>
+                    <p className="text-gray-600 text-sm mt-1">Summaries, glossary, flashcards, and analysis are prepared.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 4 */}
+              <div className="card card-hover text-left md:text-center relative">
+                <div className="flex md:block items-center md:items-stretch">
+                  <div className="shrink-0 md:mx-auto md:mb-4 w-12 h-12 rounded-full bg-green-600 text-white flex items-center justify-center shadow-lg shadow-green-200">
+                    <CheckCircle className="w-6 h-6" />
+                  </div>
+                  <div className="ml-4 md:ml-0">
+                    <div className="text-xs font-medium text-green-600 tracking-wide">STEP 4</div>
+                    <h4 className="text-lg font-semibold text-gray-900">Study & Learn</h4>
+                    <p className="text-gray-600 text-sm mt-1">Use the dashboard to explore and export what you need.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
@@ -260,6 +309,7 @@ const LandingPage = ({ onFileUploaded }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-gray-600">
             <p>&copy; 2024 PaperMind. Powered by advanced AI models including T5, BART, and Flan-T5.</p>
+            <p className="mt-2">Developed by Fenil Vadher, Ritesh Sanchala, Aryan Langhnoja</p>
           </div>
         </div>
       </footer>
