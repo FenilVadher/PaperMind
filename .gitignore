@@ -218,3 +218,6 @@ __marimo__/
 # Pycharm
 
 .idea/
+
+#node modules
+node_modules/
