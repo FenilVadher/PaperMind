@@ -83,7 +83,7 @@ pip install -r requirements.txt
 cd backend
 python simple_app.py
 ```
-The backend will run on `http://localhost:5001`
+The backend will run on `http://localhost:5000`
 
 ### Frontend Setup
 
@@ -142,7 +142,7 @@ PaperMind/
 
 ## 🔧 API Endpoints
 
-### Backend API (`http://localhost:5001`)
+### Backend API (`http://localhost:5000`)
 
 | Endpoint | Method | Description | Parameters |
 |----------|--------|-------------|------------|
@@ -238,7 +238,7 @@ MAX_CONTENT_LENGTH=16777216  # 16MB
 ### Frontend Configuration
 Update `frontend/src/services/api.js` for production:
 ```javascript
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 ```
 
 ## 📦 Dependencies
