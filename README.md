@@ -2,34 +2,55 @@
 
 **Understand research the smart way.**
 
-PaperMind is a comprehensive AI-powered research paper explainer that transforms complex academic papers into accessible summaries, glossaries, and interactive flashcards. Built with Flask (Python) backend and React frontend, it leverages state-of-the-art Hugging Face Transformers including T5, BART, and Flan-T5.
+PaperMind is a comprehensive AI-powered research paper analysis platform that transforms complex academic papers into accessible summaries, glossaries, flashcards, advanced analysis insights, and comparative studies. Built with Flask (Python) backend and React frontend, it provides intelligent document processing with both AI-powered and heuristic-based analysis methods.
 
 ## ✨ Features
 
-- **📄 Smart Summaries**: Generate both short and detailed summaries using T5 and BART models
-- **📚 Technical Glossary**: Extract and explain complex terms with simple definitions using Flan-T5
+### Core AI Features
+- **📄 Smart Summaries**: Generate both short and detailed summaries with intelligent text processing
+- **📚 Technical Glossary**: Extract and explain complex terms with contextual definitions
 - **🎯 Study Flashcards**: Create interactive Q&A flashcards for better understanding
+
+### Advanced Analysis
+- **🔍 Citation Analysis**: Extract and analyze paper citations and references
+- **🧪 Methodology Extraction**: Identify research methods and experimental approaches
+- **🔎 Semantic Search**: Search through paper content with intelligent matching
+- **📊 Research Gap Identification**: Discover gaps and future research opportunities
+- **🗺️ Concept Mapping**: Visualize key concepts and their relationships
+- **📋 Related Papers**: Find and suggest related research (mock implementation)
+
+### Paper Comparison
+- **⚖️ Multi-Paper Analysis**: Compare 2-3 papers side-by-side
+- **🎯 Content-Based Comparison**: Analyze research focus, themes, and findings
+- **📈 Methodology Comparison**: Compare experimental approaches and methods
+- **💡 Insight Generation**: Generate meaningful comparative insights
+
+### User Experience
 - **🚀 Modern UI**: Clean, responsive interface built with React and TailwindCSS
 - **⚡ Fast Processing**: Efficient PDF text extraction with PyMuPDF and pdfplumber
 - **🔄 Real-time Updates**: Live progress tracking and error handling
+- **📱 Responsive Design**: Works seamlessly on desktop and mobile devices
 
 ## 🏗️ Architecture
 
-### Backend (Flask + AI Models)
-- **Flask API**: RESTful endpoints for file upload and AI processing
+### Backend (Flask + Analysis Engine)
+- **Flask API**: RESTful endpoints for file upload, AI processing, analysis, and comparison
 - **PDF Processing**: Dual extraction methods (PyMuPDF + pdfplumber) for robustness
-- **AI Models**: 
-  - T5-small for short summaries
-  - BART-large-CNN for detailed summaries
-  - Flan-T5-base for glossary and Q&A generation
+- **Analysis Engine**: 
+  - Heuristic-based text processing for summaries, glossaries, and flashcards
+  - Citation extraction using regex patterns
+  - Methodology identification through keyword analysis
+  - Semantic search with text matching algorithms
+  - Content-based paper comparison with intelligent insights
 - **CORS Support**: Seamless frontend-backend communication
 
 ### Frontend (React + TailwindCSS)
 - **React Router**: Single-page application with smooth navigation
 - **Modern UI**: TailwindCSS with custom animations and responsive design
 - **File Upload**: Drag-and-drop interface with progress tracking
-- **Tabbed Dashboard**: Organized content display with Summary, Glossary, and Flashcards tabs
+- **Multi-Tab Dashboard**: Organized content display with Summary, Glossary, Flashcards, Analysis, and Comparison tabs
 - **Interactive Components**: Flashcard navigation, search functionality, copy-to-clipboard
+- **Advanced Features**: Multi-paper selection, content-based comparison, analysis visualization
 
 ## 🚀 Quick Start
 
@@ -60,9 +81,9 @@ pip install -r requirements.txt
 4. **Start the Flask server**
 ```bash
 cd backend
-python app.py
+python simple_app.py
 ```
-The backend will run on `http://localhost:5000`
+The backend will run on `http://localhost:5001`
 
 ### Frontend Setup
 
@@ -87,21 +108,23 @@ The frontend will run on `http://localhost:3000`
 ```
 PaperMind/
 ├── backend/
-│   ├── app.py              # Flask application and API endpoints
-│   ├── pdf_processor.py    # PDF text extraction utilities
-│   ├── ai_models.py        # AI model integration and processing
-│   └── uploads/            # Uploaded PDF files storage
+│   ├── simple_app.py       # Main Flask application with all endpoints
+│   ├── pdf_processor.py    # PDF text extraction and analysis utilities
+│   ├── uploads/            # Uploaded PDF files storage
+│   └── static/             # Static files and assets
 ├── frontend/
 │   ├── public/
 │   │   ├── index.html      # Main HTML template
 │   │   └── manifest.json   # PWA configuration
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── LandingPage.js    # File upload interface
-│   │   │   ├── Dashboard.js      # Main dashboard component
+│   │   │   ├── LandingPage.js    # File upload interface with features showcase
+│   │   │   ├── Dashboard.js      # Main dashboard with 5-tab navigation
 │   │   │   ├── SummaryTab.js     # Summary display component
 │   │   │   ├── GlossaryTab.js    # Glossary display component
-│   │   │   └── FlashcardsTab.js  # Interactive flashcards
+│   │   │   ├── FlashcardsTab.js  # Interactive flashcards
+│   │   │   ├── AnalysisTab.js    # Advanced analysis features
+│   │   │   └── ComparisonTab.js  # Multi-paper comparison
 │   │   ├── services/
 │   │   │   └── api.js            # API service layer
 │   │   ├── App.js                # Main React application
@@ -119,7 +142,7 @@ PaperMind/
 
 ## 🔧 API Endpoints
 
-### Backend API (`http://localhost:5000`)
+### Backend API (`http://localhost:5001`)
 
 | Endpoint | Method | Description | Parameters |
 |----------|--------|-------------|------------|
@@ -129,6 +152,18 @@ PaperMind/
 | `/glossary` | POST | Generate glossary | `filename` (JSON) |
 | `/flashcards` | POST | Generate flashcards | `filename`, `num_cards` (JSON) |
 | `/files` | GET | List uploaded files | None |
+
+### Advanced Analysis Endpoints
+
+| Endpoint | Method | Description | Parameters |
+|----------|--------|-------------|------------|
+| `/analyze/citations` | POST | Extract citations | `filename` (JSON) |
+| `/analyze/methodology` | POST | Extract methodology | `filename` (JSON) |
+| `/analyze/semantic-search` | POST | Semantic search | `filename`, `query` (JSON) |
+| `/analyze/research-gaps` | POST | Identify research gaps | `filename` (JSON) |
+| `/analyze/concept-map` | POST | Generate concept map | `filename` (JSON) |
+| `/analyze/related-papers` | POST | Find related papers | `filename` (JSON) |
+| `/compare-papers` | POST | Compare multiple papers | `filenames` (JSON array) |
 
 ### Example API Usage
 
@@ -149,19 +184,24 @@ const summaries = await fetch('/summarize', {
 });
 ```
 
-## 🤖 AI Models Used
+## 🧠 Analysis Methods
 
-### Summarization Models
-- **T5-small**: Fast, efficient short summaries
-- **BART-large-CNN**: Detailed, comprehensive summaries
+### Text Processing Engine
+- **Heuristic Analysis**: Intelligent text processing using regex patterns and keyword matching
+- **Content Extraction**: Advanced algorithms for citations, methodology, and concept identification
+- **Semantic Matching**: Text similarity and search algorithms
 
-### Language Understanding
-- **Flan-T5-base**: Technical term explanation and Q&A generation
+### Analysis Capabilities
+- **Summary Generation**: Sentence-based extraction and intelligent truncation
+- **Glossary Creation**: Term frequency analysis with contextual definitions
+- **Flashcard Generation**: Question-answer pair creation with multiple formats
+- **Citation Analysis**: Reference extraction and formatting
+- **Research Gap Detection**: Pattern-based identification of future work opportunities
 
-### Model Performance
-- **GPU Support**: Automatic CUDA detection for faster processing
-- **Memory Optimization**: Efficient model loading and inference
-- **Error Handling**: Robust fallback mechanisms
+### Performance Features
+- **Fast Processing**: No external API dependencies for instant results
+- **Memory Efficient**: Lightweight text processing algorithms
+- **Error Handling**: Robust fallback mechanisms and graceful degradation
 
 ## 🎨 UI Features
 
@@ -172,15 +212,18 @@ const summaries = await fetch('/summarize', {
 - Responsive design for all devices
 
 ### Dashboard
-- Tabbed interface (Summary 📄, Glossary 📚, Flashcards 🎯)
-- File information display
-- Quick action cards
-- Export and sharing options
+- 5-Tab interface (Summary 📄, Glossary 📚, Flashcards 🎯, Analysis 🔍, Comparison ⚖️)
+- File information display with upload status
+- Quick action cards with Lucide icons
+- Multi-paper selection for comparison
+- Real-time analysis results
 
 ### Interactive Components
 - **Flashcards**: Navigation, shuffle, progress tracking
-- **Glossary**: Search functionality, copy-to-clipboard
-- **Summaries**: Model attribution, regeneration options
+- **Glossary**: Search functionality, copy-to-clipboard, frequency indicators
+- **Analysis**: Citation extraction, methodology identification, research gaps
+- **Comparison**: Side-by-side paper analysis, content insights, methodology comparison
+- **Semantic Search**: Query-based content discovery within papers
 
 ## 🔧 Configuration
 
@@ -195,18 +238,17 @@ MAX_CONTENT_LENGTH=16777216  # 16MB
 ### Frontend Configuration
 Update `frontend/src/services/api.js` for production:
 ```javascript
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 ```
 
 ## 📦 Dependencies
 
 ### Backend Dependencies
 - **Flask 2.3.3**: Web framework
-- **transformers 4.35.2**: Hugging Face models
-- **torch 2.1.1**: PyTorch for model inference
 - **PyMuPDF 1.23.8**: PDF text extraction
 - **pdfplumber 0.10.3**: Alternative PDF processing
 - **Flask-CORS 4.0.0**: Cross-origin resource sharing
+- **re (built-in)**: Regular expressions for text analysis
 
 ### Frontend Dependencies
 - **React 18.2.0**: UI framework
