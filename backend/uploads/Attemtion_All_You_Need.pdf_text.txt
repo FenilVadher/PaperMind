@@ -17,13 +17,13 @@ Google Research
 Llion Jones∗
 Google Research
 
-Aidan N. Gomez∗ †
+Aidan N. Gomez∗†
 University of Toronto
 
 Łukasz Kaiser∗
 Google Brain
 
-Illia Polosukhin∗ ‡
+Illia Polosukhin∗‡
 
 Abstract
 The dominant sequence transduction models are based on complex recurrent or
@@ -170,7 +170,7 @@ we found it beneficial to linearly project the queries, keys and values h times 
 linear projections to dk, dk and dv dimensions, respectively. On each of these projected versions of
 queries, keys and values we then perform the attention function in parallel, yielding dv-dimensional
 4To illustrate why the dot products get large, assume that the components of q and k are independent random
-variables with mean 0 and variance 1. Then their dot product, q · k = �dk
+variables with mean 0 and variance 1. Then their dot product, q · k = Pdk
 i=1 qiki, has mean 0 and variance dk.
 
 output values. These are concatenated and once again projected, resulting in the final values, as
@@ -184,12 +184,12 @@ i , V W V
 i )
 Where the projections are parameter matrices W Q
 i
-∈ Rdmodel×dk, W K
+∈Rdmodel×dk, W K
 i
-∈ Rdmodel×dk, W V
+∈Rdmodel×dk, W V
 i
-∈ Rdmodel×dv
-and W O ∈ Rhdv×dmodel.
+∈Rdmodel×dv
+and W O ∈Rhdv×dmodel.
 In this work we employ h = 8 parallel attention layers, or heads. For each of these we use
 dk = dv = dmodel/h = 64. Due to the reduced dimension of each head, the total computational cost
 is similar to that of single-head attention with full dimensionality.
@@ -276,7 +276,7 @@ during training.
 Why Self-Attention
 In this section we compare various aspects of self-attention layers to the recurrent and convolu-
 tional layers commonly used for mapping one variable-length sequence of symbol representations
-(x1, ..., xn) to another sequence of equal length (z1, ..., zn), with xi, zi ∈ Rd, such as a hidden
+(x1, ..., xn) to another sequence of equal length (z1, ..., zn), with xi, zi ∈Rd, such as a hidden
 layer in a typical sequence transduction encoder or decoder. Motivating our use of self-attention we
 consider three desiderata.
 One is the total computational complexity per layer. Another is the amount of computation that can
@@ -715,7 +715,6 @@ shift-reduce constituent parsing. In Proceedings of the 51st Annual Meeting of t
 1: Long Papers), pages 434–443. ACL, August 2013.
 
 Attention Visualizations
-Input-Input Layer5
 It
 is
 in
@@ -785,7 +784,6 @@ encoder self-attention in layer 5 of 6. Many of the attention heads attend to a 
 the verb ‘making’, completing the phrase ‘making...more difficult’. Attentions here shown only for
 the word ‘making’. Different colors represent different heads. Best viewed in color.
 
-Input-Input Layer5
 The
 Law
 will
@@ -840,7 +838,6 @@ opinion
 .
 <EOS>
 <pad>
-Input-Input Layer5
 The
 Law
 will
@@ -899,7 +896,6 @@ Figure 4: Two attention heads, also in layer 5 of 6, apparently involved in anap
 Full attentions for head 5. Bottom: Isolated attentions from just the word ‘its’ for attention heads 5
 and 6. Note that the attentions are very sharp for this word.
 
-Input-Input Layer5
 The
 Law
 will
@@ -954,7 +950,6 @@ opinion
 .
 <EOS>
 <pad>
-Input-Input Layer5
 The
 Law
 will
