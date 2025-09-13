@@ -1,3 +1,6 @@
+pip==24.2
+setuptools==75.1.0
+wheel==0.44.0
 Flask==2.3.3
 flask-cors==4.0.0
 transformers==4.35.2
@@ -19,7 +22,7 @@ arxiv==1.4.8
 scholarly==1.7.11
 refextract==0.3.3
 regex==2023.10.3
-faiss-cpu==1.7.4
+faiss-cpu==1.7.5
 chromadb==0.4.18
 langchain==0.0.340
 langchain-openai==0.0.2
