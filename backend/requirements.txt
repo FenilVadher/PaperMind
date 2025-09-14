@@ -20,7 +20,7 @@ networkx==3.2.1
 plotly==5.17.0
 arxiv==1.4.8
 scholarly==1.7.11
-refextract== 1.0.0
+refextract==1.0.0
 regex==2023.10.3
 faiss-cpu==1.7.5
 chromadb==0.4.18
